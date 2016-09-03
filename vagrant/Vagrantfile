@@ -1,0 +1,27 @@
+
+# Define nodes
+nodes = [
+  { :hostname => 'puppet',	   	:ip => '10.0.0.10', :box => 'ks4th/centos65-x86_64-20140116_fix_mount', :ram => 1024,  :cpus => 2  },
+  { :hostname => 'webserver1', 	:ip => '10.0.0.20', :box => 'ks4th/centos65-x86_64-20140116_fix_mount', :ram => 1024,  :cpus => 2  },
+  { :hostname => 'database1',	  :ip => '10.0.0.30', :box => 'ks4th/centos65-x86_64-20140116_fix_mount', :ram => 1024,  :cpus => 2  },
+  { :hostname => 'nagios',      :ip => '10.0.0.40', :box => 'ks4th/centos65-x86_64-20140116_fix_mount', :ram => 1024,  :cpus => 2  },
+]
+
+# Deploy and bootstrap nodes
+Vagrant.configure("2") do |config|
+	nodes.each do |node|
+	    config.vm.define node[:hostname] do |nodeconfig|
+	      nodeconfig.vm.box = node[:box]
+	      nodeconfig.vm.hostname = node[:hostname]
+	      nodeconfig.vm.network "private_network", ip: node[:ip]
+	      nodeconfig.vm.provision :shell, path: "bootstrap.sh"
+
+	      nodeconfig.vm.provider :virtualbox do |vb|
+	      	vb.name = node[:hostname]
+	      	vb.memory = node[:ram]
+	      	vb.cpus = node[:cpus]
+	      	vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
+	      end
+	    end
+	end
+end

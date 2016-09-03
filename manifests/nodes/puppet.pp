@@ -5,10 +5,10 @@ node 'puppet' {
 	class {'essential':}	
 
 	# Install puppet-server
-	package { ['puppet-server','puppetdb','puppetdb-terminus']: ensure => latest, } ->
+	package { ['puppet-server','puppetdb','puppetdb-terminus']:ensure => latest, } ->
 	service { ['puppetmaster','puppetdb']: ensure => running, enable => true, }
 
-
+	# configure git repository
 	file_line {'git_config':
     	path  => '/etc/puppet/.git/config',
     	line  => '	url = https://rkosyk@github.com/rkosyk/puppet.git',
